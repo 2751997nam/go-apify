@@ -10,7 +10,7 @@ func validateTitle(data map[string]any) (string, bool) {
 	var message string
 	ok := true
 
-	if name := data["name"]; len(fmt.Sprint(name)) == 0 {
+	if name := data["name"]; len(helpers.AnyToString(name)) == 0 {
 		message = "Tiêu đề sản phẩm không được bỏ trống"
 		ok = false
 	}
@@ -20,8 +20,8 @@ func validateTitle(data map[string]any) (string, bool) {
 
 type SkuExistData struct {
 	Sku          string
-	NotProductId int
-	NotId        int
+	NotProductId uint64
+	NotId        uint64
 }
 
 func CheckSkuExistsInProduct(data SkuExistData) bool {
@@ -57,34 +57,36 @@ func validateSku(data map[string]any) (string, bool) {
 	isOk := true
 
 	sku := data["sku"]
-	dataId := data["id"]
-	productId := helpers.AnyToInt(dataId)
+	dataId := data["id"].(float64)
+	productId := uint64(dataId)
 	values, ok := data["productVariants"]
 	if ok {
 		var productVariants []any = values.([]any)
 		for _, value := range productVariants {
 			tmp := value.(map[string]any)
 			item := models.ProductSku{
-				Sku: fmt.Sprint(tmp["sku"]),
+				Sku: helpers.AnyToString(tmp["sku"]),
 				ModelId: models.ModelId{
-					ID: uint(helpers.AnyToInt(tmp["id"])),
+					ID: helpers.AnyFloat64ToUint64(tmp["id"]),
 				},
 			}
-			if CheckSkuExistsInProduct(SkuExistData{Sku: item.Sku, NotId: productId}) {
-				message = fmt.Sprintf("Mã %s đã tồn tại trong hệ thống", item.Sku)
-				isOk = false
-				break
-			} else if CheckSkuExistsInProductSku(SkuExistData{Sku: item.Sku, NotId: int(item.ID)}) {
-				message = fmt.Sprintf("Mã %s đã tồn tại trong hệ thống", item.Sku)
-				isOk = false
-				break
+			if len(item.Sku) > 0 {
+				if CheckSkuExistsInProduct(SkuExistData{Sku: item.Sku, NotId: productId}) {
+					message = fmt.Sprintf("Mã %s đã tồn tại trong hệ thống", item.Sku)
+					isOk = false
+					break
+				} else if CheckSkuExistsInProductSku(SkuExistData{Sku: item.Sku, NotId: item.ID}) {
+					message = fmt.Sprintf("Mã %s đã tồn tại trong hệ thống", item.Sku)
+					isOk = false
+					break
+				}
 			}
 		}
-	} else {
-		if CheckSkuExistsInProduct(SkuExistData{Sku: fmt.Sprint(sku), NotId: productId}) {
+	} else if len(helpers.AnyToString(sku)) > 0 {
+		if CheckSkuExistsInProduct(SkuExistData{Sku: helpers.AnyToString(sku), NotId: productId}) {
 			message = fmt.Sprintf("Mã %s đã tồn tại trong hệ thống", sku)
 			isOk = false
-		} else if CheckSkuExistsInProductSku(SkuExistData{Sku: fmt.Sprint(sku), NotProductId: productId}) {
+		} else if CheckSkuExistsInProductSku(SkuExistData{Sku: helpers.AnyToString(sku), NotProductId: productId}) {
 			message = fmt.Sprintf("Mã %s đã tồn tại trong hệ thống", sku)
 			isOk = false
 		}

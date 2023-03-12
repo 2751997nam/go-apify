@@ -12,5 +12,5 @@ func DoNothing(c *gin.Context) {
 }
 
 func Home(c *gin.Context) {
-	helpers.ResponseSuccess(c, nil, http.StatusAccepted)
+	helpers.ResponseSuccess(c, nil, http.StatusOK)
 }

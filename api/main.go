@@ -35,7 +35,7 @@ func main() {
 }
 
 func loadEnv() {
-	err := godotenv.Load(".env")
+	err := godotenv.Load("/Users/nam/Projects/LearningProjects/Golang/go-chillitee/product-service/.env")
 	if err != nil {
 		log.Fatalf("Some error occured. Err: %s", err)
 	}

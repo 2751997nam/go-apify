@@ -3,10 +3,10 @@ package models
 import "time"
 
 type ModelId struct {
-	ID uint `gorm:"primary_key" json:"id"`
+	ID uint64 `gorm:"primary_key" json:"id"`
 }
 
 type ModelTime struct {
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `gorm:"column:created_at; type:timestamp; default: NOW(); not null" json:"created_at"`
+	UpdatedAt time.Time `gorm:"column:updated_at; type:timestamp; default: NOW(); not null" json:"updated_at"`
 }

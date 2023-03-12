@@ -39,7 +39,9 @@ func testDB(db *gorm.DB) error {
 }
 
 func NewDatabase(dsn string) (*gorm.DB, error) {
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		CreateBatchSize: 1000,
+	})
 	if err != nil {
 		return nil, err
 	}
