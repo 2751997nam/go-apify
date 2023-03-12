@@ -2,8 +2,9 @@ package main
 
 import (
 	"product-service/api/handlers"
-	"product-service/api/handlers/listproducts"
-	"product-service/api/handlers/storeproducts"
+	storeCategory "product-service/api/handlers/category/store_category"
+	listProducts "product-service/api/handlers/product/list_products"
+	storeProducts "product-service/api/handlers/product/store_products"
 	"product-service/api/middlewares"
 
 	"github.com/gin-gonic/gin"
@@ -15,10 +16,18 @@ func routes() *gin.Engine {
 	router.GET("/", handlers.Home)
 	productRouter := router.Group("/product")
 	{
-		productRouter.GET("", listproducts.Find)
-		productRouter.POST("", storeproducts.Store)
-		productRouter.PATCH(":id", storeproducts.Store)
-		productRouter.PUT(":id", storeproducts.Store)
+		productRouter.GET("", listProducts.Find)
+		productRouter.POST("", storeProducts.Store)
+		productRouter.PATCH(":id", storeProducts.Store)
+		productRouter.PUT(":id", storeProducts.Store)
+	}
+
+	categoryRouter := router.Group("/category")
+	{
+		// productRouter.GET("", listProducts.Find)
+		categoryRouter.POST("", storeCategory.Store)
+		categoryRouter.PATCH(":id", storeCategory.Store)
+		categoryRouter.PUT(":id", storeCategory.Store)
 	}
 	router.GET("/favicon.ico", handlers.DoNothing)
 

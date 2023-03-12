@@ -1,8 +1,6 @@
 package storeproducts
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"product-service/internal/helpers"
@@ -14,15 +12,9 @@ import (
 
 func Store(c *gin.Context) {
 	db := models.GetDB()
-	var data map[string]any
-	bodyAsByteArray, err := ioutil.ReadAll(c.Request.Body)
+	data, err := helpers.GetRequestBody(c)
 	if err != nil {
-		log.Panic(err)
-		helpers.ResponseFail(c, "something went wrong", http.StatusUnprocessableEntity)
-		return
-	}
-	if err = json.Unmarshal([]byte(bodyAsByteArray), &data); err != nil {
-		log.Panic(err)
+		log.Println(err)
 		helpers.ResponseFail(c, "something went wrong", http.StatusUnprocessableEntity)
 		return
 	}

@@ -1,10 +1,14 @@
 package helpers
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"product-service/internal/types"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -90,4 +94,61 @@ func Join[T any](items []T, sep string) string {
 	}
 
 	return strings.Join(strs, sep)
+}
+
+func IsNumeric(str string) bool {
+	return regexp.MustCompile(`\d+`).MatchString(str)
+}
+
+func GetUrlFields(url string) []string {
+	retVal := []string{}
+	regex := *regexp.MustCompile(`\/:(\w+)($|\/)`)
+	res := regex.FindAllStringSubmatch(url, -1)
+	if len(res) > 0 && len(res[0]) > 1 {
+		retVal = append(retVal, res[0][1])
+	}
+	return retVal
+}
+
+func GetRequestBody(c *gin.Context) (map[string]any, error) {
+	var data map[string]any
+	bodyAsByteArray, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		return nil, err
+	}
+	if err = json.Unmarshal([]byte(bodyAsByteArray), &data); err != nil {
+		return nil, err
+	}
+
+	fields := GetUrlFields(c.FullPath())
+
+	for _, field := range fields {
+		if IsNumeric(c.Param(field)) {
+			value, _ := strconv.ParseFloat(c.Param(field), 64)
+			data[field] = value
+		} else {
+			data[field] = c.Param(field)
+		}
+	}
+
+	query := c.Request.URL.Query()
+	for field, value := range query {
+		data[field] = value
+	}
+
+	return data, nil
+}
+
+func GetInput[T any](key string, data map[string]any, defaultValue T) T {
+	value, ok := data[key]
+	if ok {
+		return value.(T)
+	}
+
+	return defaultValue
+}
+
+func LogJson(prefix string, data any) {
+	str, _ := json.MarshalIndent(data, "", "\t")
+	log.Println(prefix, string(str))
 }

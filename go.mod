@@ -20,12 +20,13 @@ require (
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/longbridgeapp/nested-set v1.5.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/redis/go-redis/v9 v9.0.2 // indirect
 	github.com/samber/lo v1.37.0 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
-	gorm.io/gorm v1.23.8 // indirect
+	gorm.io/gorm v1.23.10 // indirect
 )
 
 require (
