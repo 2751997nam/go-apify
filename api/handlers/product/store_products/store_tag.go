@@ -1,7 +1,7 @@
 package storeproducts
 
 import (
-	"log"
+	"product-service/internal/helpers"
 	"product-service/internal/models"
 
 	"github.com/samber/lo"
@@ -23,7 +23,7 @@ func StoreTag(productId uint64, tagIds []uint64) {
 	if len(deleteIds) > 0 {
 		err := db.Unscoped().Where("tag_id IN ?", deleteIds).Where("refer_id = ?", productId).Where("refer_type = ?", "PRODUCT").Delete(&models.TagRefer{}).Error
 		if err != nil {
-			log.Panic(err)
+			helpers.LogPanic(err)
 		}
 	}
 	storeIds, _ := lo.Difference(tagIds, existedIds)
@@ -39,7 +39,7 @@ func StoreTag(productId uint64, tagIds []uint64) {
 
 		err := db.Create(&storeData).Error
 		if err != nil {
-			log.Panic(err)
+			helpers.LogPanic(err)
 		}
 	}
 }

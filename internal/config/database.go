@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -25,6 +26,8 @@ func GetDsn() string {
 		Password: os.Getenv("DB_PASSWORD"),
 		Database: os.Getenv("DB_DATABASE"),
 	}
+
+	log.Println("DSN", dc.toString())
 
 	return dc.toString()
 }

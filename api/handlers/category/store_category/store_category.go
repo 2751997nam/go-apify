@@ -52,7 +52,7 @@ func Store(c *gin.Context) {
 	}
 	if err != nil {
 		helpers.ResponseFail(c, "Something went wrong", http.StatusInternalServerError)
-		log.Panic(err)
+		helpers.LogPanic(err)
 	}
 	if category.ParentId.Valid && category.ParentId.Int64 > 0 {
 		parent := models.Category{}
@@ -62,7 +62,7 @@ func Store(c *gin.Context) {
 			err := nestedset.MoveTo(db, &category, &parent, nestedset.MoveDirectionLeft)
 			if err != nil {
 				helpers.ResponseFail(c, "Something went wrong", http.StatusInternalServerError)
-				log.Panic(err)
+				helpers.LogPanic(err)
 			}
 		}
 	} else {
@@ -76,7 +76,7 @@ func Store(c *gin.Context) {
 		err := db.Select("Breadcrumb").Save(&category).Error
 		if err != nil {
 			helpers.ResponseFail(c, "Something went wrong", http.StatusInternalServerError)
-			log.Panic(err)
+			helpers.LogPanic(err)
 		}
 	}
 

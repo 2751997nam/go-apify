@@ -29,12 +29,12 @@ func Store(c *gin.Context) {
 	if productData.ID > 0 {
 		err := db.Omit("CreatedAt").Save(&productData).Error
 		if err != nil {
-			log.Panic(err)
+			helpers.LogPanic(err)
 		}
 	} else {
 		err := db.Create(&productData).Error
 		if err != nil {
-			log.Panic(err)
+			helpers.LogPanic(err)
 		}
 	}
 	dataCategoryIds, ok := data["categoryIds"].([]any)

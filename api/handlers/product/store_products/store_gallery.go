@@ -1,7 +1,7 @@
 package storeproducts
 
 import (
-	"log"
+	"product-service/internal/helpers"
 	"product-service/internal/models"
 )
 
@@ -27,12 +27,12 @@ func bulkStoreGallery(data []models.ProductGalleryData) {
 
 		err := db.Where("product_id = ?", dataItem.ProductId).Where("type = ?", dataItem.Type).Delete(&models.ProductGallery{}).Error
 		if err != nil {
-			log.Panic(err)
+			helpers.LogPanic(err)
 		}
 	}
 
 	err := db.Model(&models.ProductGallery{}).CreateInBatches(createItems, 100).Error
 	if err != nil {
-		log.Panic(err)
+		helpers.LogPanic(err)
 	}
 }

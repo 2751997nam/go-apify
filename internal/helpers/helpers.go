@@ -152,3 +152,7 @@ func LogJson(prefix string, data any) {
 	str, _ := json.MarshalIndent(data, "", "\t")
 	log.Println(prefix, string(str))
 }
+
+func LogPanic(data any) {
+	log.Panic(data)
+}

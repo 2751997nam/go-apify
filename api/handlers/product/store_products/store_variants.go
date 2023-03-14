@@ -31,7 +31,7 @@ func StoreVariants(data map[string]any) map[string]map[string]string {
 		} else {
 			err := db.Create(&saveVariant).Error
 			if err != nil {
-				log.Panic(err)
+				helpers.LogPanic(err)
 			}
 		}
 
@@ -52,13 +52,13 @@ func StoreVariants(data map[string]any) map[string]map[string]string {
 					err := db.Model(&option).Select("ImageUrl").Updates(&option).Error
 					log.Println("id", option.ID)
 					if err != nil {
-						log.Panic(err)
+						helpers.LogPanic(err)
 					}
 				}
 			} else {
 				err := db.Create(&option).Error
 				if err != nil {
-					log.Panic(err)
+					helpers.LogPanic(err)
 				}
 			}
 			target["variantOptionId"] = fmt.Sprint(option.ID)

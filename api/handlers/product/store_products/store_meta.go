@@ -2,7 +2,6 @@ package storeproducts
 
 import (
 	"encoding/json"
-	"log"
 	"product-service/internal/helpers"
 	"product-service/internal/models"
 )
@@ -44,6 +43,6 @@ func StoreProductMeta(data []models.ProductMeta) {
 	db := models.GetDB()
 	err := db.Model(&models.ProductMeta{}).Create(data).Error
 	if err != nil {
-		log.Panic(err)
+		helpers.LogPanic(err)
 	}
 }

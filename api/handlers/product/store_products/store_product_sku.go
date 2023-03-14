@@ -1,7 +1,6 @@
 package storeproducts
 
 import (
-	"log"
 	"product-service/internal/helpers"
 	"product-service/internal/models"
 	"strconv"
@@ -65,7 +64,7 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 			}
 			err := db.Create(&productSku).Error
 			if err != nil {
-				log.Panic(err)
+				helpers.LogPanic(err)
 			}
 			createIds = append(createIds, productSku.ID)
 			for _, so := range skuOptions {
@@ -105,7 +104,7 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 			if hasChange(existedSkuesById[productSku.ID], productSku) {
 				err := db.Where("id = ?", productSku.ID).Omit("CreatedAt").Updates(&productSku).Error
 				if err != nil {
-					log.Panic(err)
+					helpers.LogPanic(err)
 				}
 			}
 			skuIds = append(skuIds, productSku.ID)
@@ -127,7 +126,7 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 	if len(storeProductSkuValueData) > 0 {
 		err := db.Model(&models.ProductSkuValue{}).Omit("ID").Create(storeProductSkuValueData).Error
 		if err != nil {
-			log.Panic(err)
+			helpers.LogPanic(err)
 		}
 	}
 
@@ -138,7 +137,7 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 		for _, chunk := range lo.Chunk(deleteGallerySkuIds, 100) {
 			err := db.Unscoped().Where("product_id IN ?", chunk).Where("type = ?", "VARIANT").Delete(&models.ProductGallery{}).Error
 			if err != nil {
-				log.Panic(err)
+				helpers.LogPanic(err)
 			}
 		}
 	}
@@ -155,11 +154,11 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 			for _, chunk := range lo.Chunk(deleteIds, 100) {
 				err := db.Where("sku_id IN (?)", chunk).Delete(&models.ProductSkuValue{}).Error
 				if err != nil {
-					log.Panic(err)
+					helpers.LogPanic(err)
 				}
 				err = db.Where("id IN (?)", chunk).Delete(&models.ProductSku{}).Error
 				if err != nil {
-					log.Panic(err)
+					helpers.LogPanic(err)
 				}
 			}
 		}
@@ -226,10 +225,10 @@ func removeAllSku(productId uint64) {
 	db := models.GetDB()
 	err := db.Model(&models.ProductSkuValue{}).Where("product_id = ?", productId).Delete(&models.ProductSkuValue{}).Error
 	if err != nil {
-		log.Panic(err)
+		helpers.LogPanic(err)
 	}
 	err = db.Model(&models.ProductSku{}).Where("product_id = ?", productId).Delete(&models.ProductSku{}).Error
 	if err != nil {
-		log.Panic(err)
+		helpers.LogPanic(err)
 	}
 }

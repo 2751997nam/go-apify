@@ -2,7 +2,9 @@ package driver
 
 import (
 	"fmt"
+	"log"
 	"product-service/internal/config"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -39,12 +41,26 @@ func testDB(db *gorm.DB) error {
 }
 
 func NewDatabase(dsn string) (*gorm.DB, error) {
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		CreateBatchSize: 1000,
-	})
-	if err != nil {
-		return nil, err
-	}
 
-	return db, nil
+	counts := 0
+	for {
+		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+			CreateBatchSize: 1000,
+		})
+		if err != nil {
+			log.Println("Mysql not yet ready ...")
+			counts++
+		} else {
+			log.Println("Connected to Mysql!")
+			return db, nil
+		}
+
+		if counts > 10 {
+			log.Println(err)
+			return nil, err
+		}
+
+		log.Println("Backing off for two seconds....")
+		time.Sleep(2 * time.Second)
+	}
 }

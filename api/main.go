@@ -6,14 +6,12 @@ import (
 	"os"
 	"product-service/internal/driver"
 
-	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
 
 var webPort = os.Getenv("PORT")
 
 func main() {
-	loadEnv()
 	if webPort == "" {
 		webPort = "8080"
 	}
@@ -30,15 +28,8 @@ func main() {
 
 	router := routes()
 
-	router.Run(fmt.Sprintf("localhost:%s", webPort))
+	router.Run(fmt.Sprintf(":%s", webPort))
 
-}
-
-func loadEnv() {
-	err := godotenv.Load("/Users/nam/Projects/LearningProjects/Golang/go-chillitee/product-service/.env")
-	if err != nil {
-		log.Fatalf("Some error occured. Err: %s", err)
-	}
 }
 
 func run() (*gorm.DB, error) {
