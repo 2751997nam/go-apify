@@ -15,3 +15,7 @@ type ProductSkuValue struct {
 func (ProductSkuValue) TableName() string {
 	return "sb_product_sku_value"
 }
+
+func (o *ProductSkuValue) GetVariantId() uint64 {
+	return o.VariantId
+}

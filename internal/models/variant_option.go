@@ -16,3 +16,7 @@ type VariantOption struct {
 func (VariantOption) TableName() string {
 	return "sb_product_variant_option"
 }
+
+func (o *VariantOption) GetVariantId() uint64 {
+	return o.VariantId
+}

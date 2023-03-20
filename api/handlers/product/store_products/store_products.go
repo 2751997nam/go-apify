@@ -12,7 +12,7 @@ import (
 
 func Store(c *gin.Context) {
 	db := models.GetDB()
-	data, err := helpers.GetRequestBody(c)
+	data, err := helpers.GetRequestData(c)
 	if err != nil {
 		log.Println(err)
 		helpers.ResponseFail(c, "something went wrong", http.StatusUnprocessableEntity)

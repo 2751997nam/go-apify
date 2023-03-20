@@ -55,7 +55,7 @@ func NewDatabase(dsn string) (*gorm.DB, error) {
 			return db, nil
 		}
 
-		if counts > 10 {
+		if counts > 20 {
 			log.Println(err)
 			return nil, err
 		}

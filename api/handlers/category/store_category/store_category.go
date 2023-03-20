@@ -16,7 +16,7 @@ import (
 
 func buildData(c *gin.Context) (models.Category, error) {
 	retVal := models.Category{}
-	data, err := helpers.GetRequestBody(c)
+	data, err := helpers.GetRequestData(c)
 	if err != nil {
 		return retVal, err
 	}

@@ -3,7 +3,7 @@ package helpers
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"product-service/internal/types"
@@ -13,10 +13,11 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/exp/maps"
 )
 
 func ResponseSuccess(c *gin.Context, result any, status int) {
-	c.IndentedJSON(status, types.Response{
+	c.PureJSON(status, types.Response{
 		Status: "successful",
 		Result: result,
 	})
@@ -110,9 +111,9 @@ func GetUrlFields(url string) []string {
 	return retVal
 }
 
-func GetRequestBody(c *gin.Context) (map[string]any, error) {
+func GetRequestData(c *gin.Context) (map[string]any, error) {
 	var data map[string]any
-	bodyAsByteArray, err := ioutil.ReadAll(c.Request.Body)
+	bodyAsByteArray, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -146,6 +147,26 @@ func GetInput[T any](key string, data map[string]any, defaultValue T) T {
 	}
 
 	return defaultValue
+}
+
+func ArrayUnique[T comparable](array []T) []T {
+	retVal := map[T]T{}
+
+	for _, item := range array {
+		if _, ok := retVal[item]; !ok {
+			retVal[item] = item
+		}
+	}
+
+	return maps.Values(retVal)
+}
+
+func ExistInMap[ValueType any](key any, items map[any]ValueType) bool {
+	if _, ok := items[key]; ok {
+		return true
+	}
+
+	return false
 }
 
 func LogJson(prefix string, data any) {

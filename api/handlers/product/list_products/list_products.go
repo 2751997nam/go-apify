@@ -69,7 +69,6 @@ func buildMeta(filter map[string]string) types.Meta {
 }
 
 func Find(c *gin.Context) {
-
 	var products []models.Product
 	filter := buildFilter(c)
 	query := buildQuery(filter)

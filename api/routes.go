@@ -4,7 +4,9 @@ import (
 	"product-service/api/handlers"
 	storeCategory "product-service/api/handlers/category/store_category"
 	listProducts "product-service/api/handlers/product/list_products"
+	showProduct "product-service/api/handlers/product/show_product"
 	storeProducts "product-service/api/handlers/product/store_products"
+	viewProduct "product-service/api/handlers/product/view_product"
 	"product-service/api/middlewares"
 
 	"github.com/gin-gonic/gin"
@@ -13,10 +15,12 @@ import (
 func routes() *gin.Engine {
 	router := gin.Default()
 	router.Use(middlewares.CORSMiddleware())
-	router.GET("/", handlers.Home)
-	productRouter := router.Group("/product")
+	productRouter := router.Group("/")
 	{
 		productRouter.GET("", listProducts.Find)
+		productRouter.GET("view/:id", viewProduct.View)
+		productRouter.GET("variant/:id", viewProduct.ViewVariant)
+		productRouter.GET("show/:id", showProduct.Show)
 		productRouter.POST("", storeProducts.Store)
 		productRouter.PATCH(":id", storeProducts.Store)
 		productRouter.PUT(":id", storeProducts.Store)

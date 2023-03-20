@@ -12,6 +12,7 @@ type ProductSku struct {
 	IsDefault int               `json:"is_default"`
 	Status    string            `json:"status"`
 	SkuValues []ProductSkuValue `gorm:"foreignKey:sku_id"`
+	Gallery   []ProductGallery  `gorm:"foreignKey:ProductId" json:"gallery,omitempty"`
 	CreatedAt time.Time         `json:"created_at"`
 	UpdatedAt time.Time         `json:"updated_at"`
 }

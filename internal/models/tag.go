@@ -4,7 +4,7 @@ import "time"
 
 type Tag struct {
 	ModelId
-	Name      string    `json:"name"`
+	Title     string    `json:"title"`
 	Slug      string    `json:"slug"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
