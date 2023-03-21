@@ -3,7 +3,7 @@ package models
 import "time"
 
 type VariantOption struct {
-	ModelId
+	BaseModel
 	Name      string    `json:"name"`
 	Code      string    `json:"code"`
 	Slug      string    `json:"slug"`

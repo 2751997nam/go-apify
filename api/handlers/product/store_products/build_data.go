@@ -11,7 +11,7 @@ import (
 func buildProductData(data map[string]any) models.Product {
 	fmt.Println("product id : ", data["id"])
 	retVal := models.Product{
-		ModelId: models.ModelId{
+		BaseModel: models.BaseModel{
 			ID: helpers.AnyFloat64ToUint64(data["id"]),
 		},
 		Name:               helpers.AnyToString(data["name"]),

@@ -3,7 +3,7 @@ package models
 import "time"
 
 type ProductNCategory struct {
-	ModelId
+	BaseModel
 	ProductId  uint64    `json:"product_id"`
 	CategoryId uint64    `json:"category_id"`
 	IsParent   uint      `json:"is_parent"`

@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Product struct {
-	ModelId
+	BaseModel
 	Sku                string           `json:"sku"`
 	Name               string           `json:"name"`
 	Slug               string           `json:"slug"`

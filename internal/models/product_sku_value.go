@@ -3,7 +3,7 @@ package models
 import "time"
 
 type ProductSkuValue struct {
-	ModelId
+	BaseModel
 	ProductId       uint64    `json:"product_id"`
 	SkuId           uint64    `json:"sku_id"`
 	VariantId       uint64    `json:"variant_id"`

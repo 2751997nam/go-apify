@@ -177,3 +177,7 @@ func LogJson(prefix string, data any) {
 func LogPanic(data any) {
 	log.Panic(data)
 }
+
+func Log(data ...any) {
+	log.Println(data...)
+}

@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Tag struct {
-	ModelId
+	BaseModel
 	Title     string    `json:"title"`
 	Slug      string    `json:"slug"`
 	CreatedAt time.Time `json:"created_at"`

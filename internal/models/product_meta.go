@@ -3,7 +3,7 @@ package models
 import "time"
 
 type ProductMeta struct {
-	ModelId
+	BaseModel
 	ProductId uint64    `json:"product_id"`
 	Key       string    `json:"key"`
 	Value     string    `json:"value"`

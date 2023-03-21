@@ -3,7 +3,7 @@ package models
 import "time"
 
 type ProductGallery struct {
-	ModelId
+	BaseModel
 	Type      string `json:"type"`
 	ProductId uint64 `json:"product_id"`
 	ImageUrl  string `json:"image_url"`
@@ -13,7 +13,7 @@ type ProductGallery struct {
 }
 
 type ProductGalleryData struct {
-	ModelId
+	BaseModel
 	Type      string    `json:"type"`
 	ProductId uint64    `json:"product_id"`
 	ImageUrl  string    `json:"image_url"`

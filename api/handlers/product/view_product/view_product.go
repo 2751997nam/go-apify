@@ -25,7 +25,7 @@ type ViewResult struct {
 func getProduct(id uint64) models.Product {
 	db := models.GetDB()
 	product := models.Product{
-		ModelId: models.ModelId{
+		BaseModel: models.BaseModel{
 			ID: id,
 		},
 	}
@@ -62,7 +62,7 @@ func ViewVariant(c *gin.Context) {
 
 	db := models.GetDB()
 	product := models.Product{
-		ModelId: models.ModelId{
+		BaseModel: models.BaseModel{
 			ID: productId,
 		},
 	}

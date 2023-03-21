@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type ModelId struct {
+type BaseModel struct {
 	ID uint64 `gorm:"primary_key;auto_increment" json:"id"`
 }
 

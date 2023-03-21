@@ -3,7 +3,7 @@ package models
 import "time"
 
 type ProductSku struct {
-	ModelId
+	BaseModel
 	Sku       string            `json:"sku"`
 	Price     float32           `json:"price"`
 	HighPrice float32           `json:"high_price"`

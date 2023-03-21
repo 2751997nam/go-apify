@@ -1,7 +1,7 @@
 package models
 
 type TagRefer struct {
-	ModelId
+	BaseModel
 	TagId     uint64 `json:"tag_id"`
 	ReferId   uint64 `json:"refer_id"`
 	ReferType string `json:"string"`

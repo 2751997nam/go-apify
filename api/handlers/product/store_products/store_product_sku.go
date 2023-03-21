@@ -193,7 +193,7 @@ func hasChange(old models.ProductSku, new models.ProductSku) bool {
 
 func buildProductSku(input map[string]any, productId uint64) models.ProductSku {
 	retVal := models.ProductSku{
-		ModelId: models.ModelId{
+		BaseModel: models.BaseModel{
 			ID: helpers.AnyFloat64ToUint64(input["id"]),
 		},
 		ProductId: productId,

@@ -66,7 +66,7 @@ func validateSku(data map[string]any) (string, bool) {
 			tmp := value.(map[string]any)
 			item := models.ProductSku{
 				Sku: helpers.AnyToString(tmp["sku"]),
-				ModelId: models.ModelId{
+				BaseModel: models.BaseModel{
 					ID: helpers.AnyFloat64ToUint64(tmp["id"]),
 				},
 			}

@@ -1,6 +1,7 @@
 package viewproduct
 
 import (
+	templateSku "product-service/api/handlers/product/template_sku"
 	"product-service/internal/config"
 	"product-service/internal/helpers"
 	"product-service/internal/models"
@@ -15,7 +16,21 @@ type OptionInterface interface {
 
 func GetSkues(product models.Product) GetSkuReponse {
 	db := models.GetDB()
-	skues := GetProductSkues(product.ID)
+	pnt := models.ProductNTemplate{}
+	db.Where("product_id = ?", product.ID).First(&pnt)
+	skues := []models.ProductSku{}
+	if pnt.ID > 0 {
+		template := models.Template{
+			BaseModel: models.BaseModel{
+				ID: pnt.TemplateId,
+			},
+		}
+		db.First(&template)
+		skues = templateSku.Parse(product.ID, template)
+		product.ID = template.ProductIdFake
+	} else {
+		skues = GetProductSkues(product.ID)
+	}
 	variantIds := map[uint64]uint64{}
 	optionIds := map[uint64]uint64{}
 	optionByVariant := map[uint64][]uint64{}
@@ -78,11 +93,7 @@ func GetSkues(product models.Product) GetSkuReponse {
 }
 
 func buildSku(sku models.ProductSku, product models.Product, variantById map[uint64]models.Variant, optionById map[uint64]models.VariantOption) types.ProductSkuView {
-	skuImg := sku.ImageUrl
 	skuStatus := sku.Status
-	if len(skuImg) == 0 {
-		skuImg = product.ImageUrl
-	}
 	if product.Status != "ACTIVE" {
 		skuStatus = product.Status
 	}
@@ -95,7 +106,10 @@ func buildSku(sku models.ProductSku, product models.Product, variantById map[uin
 		Status:    skuStatus,
 	}
 
-	gallery := []string{skuImg}
+	gallery := []string{}
+	if len(sku.ImageUrl) > 0 {
+		gallery = append(gallery, sku.ImageUrl)
+	}
 	for _, img := range sku.Gallery {
 		gallery = append(gallery, img.ImageUrl)
 	}
@@ -125,10 +139,11 @@ func buildVariants(variantById map[uint64]models.Variant, optionById map[uint64]
 			for _, optionId := range optionIds {
 				if option, ok := optionById[optionId]; ok {
 					variant.Values = append(variant.Values, types.OptionView{
-						ID:        optionId,
-						Name:      option.Name,
-						ImageUrl:  option.ImageUrl,
-						VariantId: option.VariantId,
+						ID:       optionId,
+						Name:     option.Name,
+						Slug:     option.Slug,
+						ImageUrl: option.ImageUrl,
+						// VariantId: option.VariantId,
 					})
 				}
 			}
