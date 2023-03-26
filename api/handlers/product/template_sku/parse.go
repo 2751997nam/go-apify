@@ -24,6 +24,7 @@ func Parse(productId uint64, template models.Template) []models.ProductSku {
 			Price:     item.Price,
 			HighPrice: item.HighPrice,
 			ImageUrl:  item.ImageUrl,
+			IsDefault: item.IsDefault,
 			Status:    item.Status,
 			Gallery:   []models.ProductGallery{},
 			SkuValues: []models.ProductSkuValue{},

@@ -17,7 +17,7 @@ func routes() *gin.Engine {
 	router.Use(middlewares.CORSMiddleware())
 	productRouter := router.Group("/")
 	{
-		productRouter.GET("", listProducts.Find)
+		productRouter.GET("find", listProducts.Find)
 		productRouter.GET("view/:id", viewProduct.View)
 		productRouter.GET("variant/:id", viewProduct.ViewVariant)
 		productRouter.GET("show/:id", showProduct.Show)
