@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"net/http"
-	"product-service/internal/helpers"
+
+	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,5 +13,5 @@ func DoNothing(c *gin.Context) {
 }
 
 func Home(c *gin.Context) {
-	helpers.ResponseSuccess(c, "ChilleTee Product Service", http.StatusOK)
+	goHelpers.ResponseSuccess(c, "ChilleTee Product Service", http.StatusOK)
 }

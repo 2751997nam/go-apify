@@ -8,11 +8,12 @@ require (
 	github.com/longbridgeapp/nested-set v1.5.2
 	github.com/redis/go-redis/v9 v9.0.2
 	github.com/samber/lo v1.37.0
-	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17
+	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
 	gorm.io/gorm v1.23.10
 )
 
 require (
+	github.com/2751997nam/go-helpers v0.0.0-20230327220831-a7a50795417d // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect

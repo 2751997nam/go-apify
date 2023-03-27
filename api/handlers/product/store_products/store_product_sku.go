@@ -1,9 +1,10 @@
 package storeproducts
 
 import (
-	"product-service/internal/helpers"
 	"product-service/internal/models"
 	"strconv"
+
+	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
 
 	"github.com/samber/lo"
 
@@ -52,7 +53,7 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 
 	for _, v := range values {
 		value := v.(map[string]any)
-		if variantExistLen != optionLen && helpers.AnyFloat64ToUint64(value["id"]) > 0 {
+		if variantExistLen != optionLen && goHelpers.AnyFloat64ToUint64(value["id"]) > 0 {
 			value["id"] = 0
 		}
 		productSku := buildProductSku(value, productId)
@@ -64,22 +65,22 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 			}
 			err := db.Create(&productSku).Error
 			if err != nil {
-				helpers.LogPanic(err)
+				goHelpers.LogPanic(err)
 			}
 			createIds = append(createIds, productSku.ID)
 			for _, so := range skuOptions {
 				skuOption := so.(map[string]any)
 				variantSlug := ""
-				if len(helpers.AnyToString(skuOption["variant_slug"])) == 0 {
-					variantSlug = helpers.AnyToString(skuOption["variant_slug"])
+				if len(goHelpers.AnyToString(skuOption["variant_slug"])) == 0 {
+					variantSlug = goHelpers.AnyToString(skuOption["variant_slug"])
 				} else {
-					variantSlug = slug.Make(helpers.AnyToString(skuOption["variant"]))
+					variantSlug = slug.Make(goHelpers.AnyToString(skuOption["variant"]))
 				}
 				optionSlug := ""
-				if len(helpers.AnyToString(skuOption["slug"])) > 0 {
-					optionSlug = helpers.AnyToString(skuOption["slug"])
+				if len(goHelpers.AnyToString(skuOption["slug"])) > 0 {
+					optionSlug = goHelpers.AnyToString(skuOption["slug"])
 				} else {
-					optionSlug = slug.Make(helpers.AnyToString(skuOption["name"]))
+					optionSlug = slug.Make(goHelpers.AnyToString(skuOption["name"]))
 				}
 				key := variantSlug + "+++" + optionSlug
 				mappingValue, ok := variantMapping[key]
@@ -104,7 +105,7 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 			if hasChange(existedSkuesById[productSku.ID], productSku) {
 				err := db.Where("id = ?", productSku.ID).Omit("CreatedAt").Updates(&productSku).Error
 				if err != nil {
-					helpers.LogPanic(err)
+					goHelpers.LogPanic(err)
 				}
 			}
 			skuIds = append(skuIds, productSku.ID)
@@ -126,7 +127,7 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 	if len(storeProductSkuValueData) > 0 {
 		err := db.Model(&models.ProductSkuValue{}).Omit("ID").Create(storeProductSkuValueData).Error
 		if err != nil {
-			helpers.LogPanic(err)
+			goHelpers.LogPanic(err)
 		}
 	}
 
@@ -137,7 +138,7 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 		for _, chunk := range lo.Chunk(deleteGallerySkuIds, 100) {
 			err := db.Unscoped().Where("product_id IN ?", chunk).Where("type = ?", "VARIANT").Delete(&models.ProductGallery{}).Error
 			if err != nil {
-				helpers.LogPanic(err)
+				goHelpers.LogPanic(err)
 			}
 		}
 	}
@@ -154,11 +155,11 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 			for _, chunk := range lo.Chunk(deleteIds, 100) {
 				err := db.Where("sku_id IN (?)", chunk).Delete(&models.ProductSkuValue{}).Error
 				if err != nil {
-					helpers.LogPanic(err)
+					goHelpers.LogPanic(err)
 				}
 				err = db.Where("id IN (?)", chunk).Delete(&models.ProductSku{}).Error
 				if err != nil {
-					helpers.LogPanic(err)
+					goHelpers.LogPanic(err)
 				}
 			}
 		}
@@ -194,26 +195,26 @@ func hasChange(old models.ProductSku, new models.ProductSku) bool {
 func buildProductSku(input map[string]any, productId uint64) models.ProductSku {
 	retVal := models.ProductSku{
 		BaseModel: models.BaseModel{
-			ID: helpers.AnyFloat64ToUint64(input["id"]),
+			ID: goHelpers.AnyFloat64ToUint64(input["id"]),
 		},
 		ProductId: productId,
-		ImageUrl:  helpers.AnyToString(input["image_url"]),
+		ImageUrl:  goHelpers.AnyToString(input["image_url"]),
 		Price:     0,
 		HighPrice: 0,
-		Sku:       helpers.AnyToString(input["sku"]),
-		IsDefault: helpers.AnyToInt(input["is_default"]),
+		Sku:       goHelpers.AnyToString(input["sku"]),
+		IsDefault: goHelpers.AnyToInt(input["is_default"]),
 	}
 
-	if helpers.AnyToFloat(input["price"]) > 0 {
-		retVal.Price = helpers.AnyToFloat(input["price"])
+	if goHelpers.AnyToFloat(input["price"]) > 0 {
+		retVal.Price = goHelpers.AnyToFloat(input["price"])
 	}
 
-	if helpers.AnyToFloat(input["high_price"]) > 0 {
-		retVal.HighPrice = helpers.AnyToFloat(input["high_price"])
+	if goHelpers.AnyToFloat(input["high_price"]) > 0 {
+		retVal.HighPrice = goHelpers.AnyToFloat(input["high_price"])
 	}
 
-	if len(helpers.AnyToString(input["status"])) > 0 {
-		retVal.Status = helpers.AnyToString(input["status"])
+	if len(goHelpers.AnyToString(input["status"])) > 0 {
+		retVal.Status = goHelpers.AnyToString(input["status"])
 	} else {
 		retVal.Status = "ACTIVE"
 	}
@@ -225,10 +226,10 @@ func removeAllSku(productId uint64) {
 	db := models.GetDB()
 	err := db.Model(&models.ProductSkuValue{}).Where("product_id = ?", productId).Delete(&models.ProductSkuValue{}).Error
 	if err != nil {
-		helpers.LogPanic(err)
+		goHelpers.LogPanic(err)
 	}
 	err = db.Model(&models.ProductSku{}).Where("product_id = ?", productId).Delete(&models.ProductSku{}).Error
 	if err != nil {
-		helpers.LogPanic(err)
+		goHelpers.LogPanic(err)
 	}
 }

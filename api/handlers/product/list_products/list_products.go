@@ -2,14 +2,15 @@ package listproducts
 
 import (
 	"math"
-	"product-service/internal/helpers"
 	"product-service/internal/models"
 	timelayout "product-service/internal/pkg/time_layout"
-	"product-service/internal/types"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
+	goHelpersTypes "github.com/2751997nam/go-helpers/pkg/types"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -55,7 +56,7 @@ func buildQuery(filter map[string]string) *gorm.DB {
 
 			query.Where("id in ?", productIds)
 		}
-		if helpers.IsNumeric(searchQuery) {
+		if goHelpers.IsNumeric(searchQuery) {
 			var productIds []uint64
 			db.Model(&models.Product{}).Where("id = ?", searchQuery).Pluck("id", &productIds)
 			if len(productIds) > 0 {
@@ -91,10 +92,10 @@ func buildQuery(filter map[string]string) *gorm.DB {
 	}
 
 	toDate := getFilterValue("to", filter, "")
-	helpers.Log("toDate", toDate)
+	goHelpers.Log("toDate", toDate)
 	if len(toDate) > 0 {
 		to, err := time.Parse(timelayout.DateOnly, toDate)
-		helpers.Log("toDate", to)
+		goHelpers.Log("toDate", to)
 		if err == nil {
 			query.Where("sb_product.created_at <= ?", time.Date(to.Year(), to.Month(), to.Day(), 23, 59, 59, 999, to.Location()))
 		}
@@ -117,9 +118,9 @@ func buildPaginationQuery(query *gorm.DB, filter map[string]string) *gorm.DB {
 	return query
 }
 
-func buildMeta(filter map[string]string) types.Meta {
+func buildMeta(filter map[string]string) goHelpersTypes.Meta {
 	query := buildQuery(filter)
-	var meta types.Meta
+	var meta goHelpersTypes.Meta
 	pageSize, _ := strconv.Atoi(getFilterValue("page_size", filter, "50"))
 	pageId, _ := strconv.Atoi(getFilterValue("page_id", filter, "0"))
 	meta.PageId = pageId
@@ -142,5 +143,5 @@ func Find(c *gin.Context) {
 	buildPaginationQuery(query, filter).Find(&products)
 	meta := buildMeta(filter)
 
-	helpers.ResponseWithMeta(c, products, meta)
+	goHelpers.ResponseWithMeta(c, products, meta)
 }

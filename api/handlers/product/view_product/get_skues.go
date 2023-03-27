@@ -3,10 +3,11 @@ package viewproduct
 import (
 	templateSku "product-service/api/handlers/product/template_sku"
 	"product-service/internal/config"
-	"product-service/internal/helpers"
 	"product-service/internal/models"
 	"product-service/internal/types"
 	"sort"
+
+	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
 
 	"golang.org/x/exp/maps"
 )
@@ -56,7 +57,7 @@ func GetSkues(product models.Product) GetSkuReponse {
 		}
 	}
 	for VariantId := range optionByVariant {
-		optionByVariant[VariantId] = helpers.ArrayUnique(optionByVariant[VariantId])
+		optionByVariant[VariantId] = goHelpers.ArrayUnique(optionByVariant[VariantId])
 	}
 
 	variantById := map[uint64]models.Variant{}

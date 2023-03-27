@@ -2,15 +2,16 @@ package storeproducts
 
 import (
 	"fmt"
-	"product-service/internal/helpers"
 	"product-service/internal/models"
+
+	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
 )
 
 func validateTitle(data map[string]any) (string, bool) {
 	var message string
 	ok := true
 
-	if name := data["name"]; len(helpers.AnyToString(name)) == 0 {
+	if name := data["name"]; len(goHelpers.AnyToString(name)) == 0 {
 		message = "Tiêu đề sản phẩm không được bỏ trống"
 		ok = false
 	}
@@ -65,9 +66,9 @@ func validateSku(data map[string]any) (string, bool) {
 		for _, value := range productVariants {
 			tmp := value.(map[string]any)
 			item := models.ProductSku{
-				Sku: helpers.AnyToString(tmp["sku"]),
+				Sku: goHelpers.AnyToString(tmp["sku"]),
 				BaseModel: models.BaseModel{
-					ID: helpers.AnyFloat64ToUint64(tmp["id"]),
+					ID: goHelpers.AnyFloat64ToUint64(tmp["id"]),
 				},
 			}
 			if len(item.Sku) > 0 {
@@ -82,11 +83,11 @@ func validateSku(data map[string]any) (string, bool) {
 				}
 			}
 		}
-	} else if len(helpers.AnyToString(sku)) > 0 {
-		if CheckSkuExistsInProduct(SkuExistData{Sku: helpers.AnyToString(sku), NotId: productId}) {
+	} else if len(goHelpers.AnyToString(sku)) > 0 {
+		if CheckSkuExistsInProduct(SkuExistData{Sku: goHelpers.AnyToString(sku), NotId: productId}) {
 			message = fmt.Sprintf("Mã %s đã tồn tại trong hệ thống", sku)
 			isOk = false
-		} else if CheckSkuExistsInProductSku(SkuExistData{Sku: helpers.AnyToString(sku), NotProductId: productId}) {
+		} else if CheckSkuExistsInProductSku(SkuExistData{Sku: goHelpers.AnyToString(sku), NotProductId: productId}) {
 			message = fmt.Sprintf("Mã %s đã tồn tại trong hệ thống", sku)
 			isOk = false
 		}

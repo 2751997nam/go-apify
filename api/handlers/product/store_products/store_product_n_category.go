@@ -1,8 +1,9 @@
 package storeproducts
 
 import (
-	"product-service/internal/helpers"
 	"product-service/internal/models"
+
+	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
 
 	"github.com/samber/lo"
 )
@@ -23,7 +24,7 @@ func StoreProductNCategory(productId uint64, categoryIds []uint64) {
 	if len(deleteIds) > 0 {
 		err := db.Unscoped().Where("category_id IN ?", deleteIds).Where("product_id = ?", productId).Delete(&models.ProductNCategory{}).Error
 		if err != nil {
-			helpers.LogPanic(err)
+			goHelpers.LogPanic(err)
 		}
 	}
 	storeIds, _ := lo.Difference(categoryIds, existedIds)

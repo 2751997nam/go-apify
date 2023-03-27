@@ -2,21 +2,22 @@ package storeproducts
 
 import (
 	"encoding/json"
-	"product-service/internal/helpers"
 	"product-service/internal/models"
+
+	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
 )
 
 func buildProductMeta(data map[string]any, productId uint64) []models.ProductMeta {
 	retVal := []models.ProductMeta{}
 	seoMeta := map[string]string{}
 	if data["meta_title"] != nil {
-		seoMeta["meta_title"] = helpers.AnyToString(data["meta_title"])
+		seoMeta["meta_title"] = goHelpers.AnyToString(data["meta_title"])
 	}
 	if data["meta_description"] != nil {
-		seoMeta["meta_description"] = helpers.AnyToString(data["meta_description"])
+		seoMeta["meta_description"] = goHelpers.AnyToString(data["meta_description"])
 	}
 	if data["meta_keywords"] != nil {
-		seoMeta["meta_keywords"] = helpers.AnyToString(data["meta_keywords"])
+		seoMeta["meta_keywords"] = goHelpers.AnyToString(data["meta_keywords"])
 	}
 
 	if len(seoMeta) > 0 {
@@ -28,7 +29,7 @@ func buildProductMeta(data map[string]any, productId uint64) []models.ProductMet
 		})
 	}
 
-	if helpers.AnyToInt(data["is_custom_design"]) == 0 {
+	if goHelpers.AnyToInt(data["is_custom_design"]) == 0 {
 		retVal = append(retVal, models.ProductMeta{
 			ProductId: productId,
 			Key:       "is_custom_design",
@@ -43,6 +44,6 @@ func StoreProductMeta(data []models.ProductMeta) {
 	db := models.GetDB()
 	err := db.Model(&models.ProductMeta{}).Create(data).Error
 	if err != nil {
-		helpers.LogPanic(err)
+		goHelpers.LogPanic(err)
 	}
 }
