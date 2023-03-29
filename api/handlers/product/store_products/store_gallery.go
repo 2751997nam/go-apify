@@ -3,7 +3,7 @@ package storeproducts
 import (
 	"product-service/internal/models"
 
-	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
+	"github.com/2751997nam/go-helpers/utils"
 )
 
 func bulkStoreGallery(data []models.ProductGalleryData) {
@@ -28,12 +28,18 @@ func bulkStoreGallery(data []models.ProductGalleryData) {
 
 		err := db.Where("product_id = ?", dataItem.ProductId).Where("type = ?", dataItem.Type).Delete(&models.ProductGallery{}).Error
 		if err != nil {
-			goHelpers.LogPanic(err)
+			utils.LogPanic(err)
+		} else {
+			utils.QuickLog(map[string]any{"data": data}, dataItem.ProductId, "PRODUCT_GALLERY_"+dataItem.Type, "DELETE")
 		}
 	}
 
 	err := db.Model(&models.ProductGallery{}).CreateInBatches(createItems, 100).Error
 	if err != nil {
-		goHelpers.LogPanic(err)
+		utils.LogPanic(err)
+	} else {
+		for _, item := range createItems {
+			utils.QuickLog(item, item.ProductId, "PRODUCT_GALLERY_"+item.Type, "CREATE")
+		}
 	}
 }

@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"product-service/internal/models"
 
-	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
+	"github.com/2751997nam/go-helpers/utils"
 )
 
 func validateTitle(data map[string]any) (string, bool) {
 	var message string
 	ok := true
 
-	if name := data["name"]; len(goHelpers.AnyToString(name)) == 0 {
+	if name := data["name"]; len(utils.AnyToString(name)) == 0 {
 		message = "Tiêu đề sản phẩm không được bỏ trống"
 		ok = false
 	}
@@ -58,17 +58,19 @@ func validateSku(data map[string]any) (string, bool) {
 	isOk := true
 
 	sku := data["sku"]
-	dataId := data["id"].(float64)
-	productId := uint64(dataId)
+	productId := uint64(0)
+	if dataId, ok := data["id"]; ok {
+		productId = dataId.(uint64)
+	}
 	values, ok := data["productVariants"]
 	if ok {
 		var productVariants []any = values.([]any)
 		for _, value := range productVariants {
 			tmp := value.(map[string]any)
 			item := models.ProductSku{
-				Sku: goHelpers.AnyToString(tmp["sku"]),
+				Sku: utils.AnyToString(tmp["sku"]),
 				BaseModel: models.BaseModel{
-					ID: goHelpers.AnyFloat64ToUint64(tmp["id"]),
+					ID: utils.AnyFloat64ToUint64(tmp["id"]),
 				},
 			}
 			if len(item.Sku) > 0 {
@@ -83,11 +85,11 @@ func validateSku(data map[string]any) (string, bool) {
 				}
 			}
 		}
-	} else if len(goHelpers.AnyToString(sku)) > 0 {
-		if CheckSkuExistsInProduct(SkuExistData{Sku: goHelpers.AnyToString(sku), NotId: productId}) {
+	} else if len(utils.AnyToString(sku)) > 0 {
+		if CheckSkuExistsInProduct(SkuExistData{Sku: utils.AnyToString(sku), NotId: productId}) {
 			message = fmt.Sprintf("Mã %s đã tồn tại trong hệ thống", sku)
 			isOk = false
-		} else if CheckSkuExistsInProductSku(SkuExistData{Sku: goHelpers.AnyToString(sku), NotProductId: productId}) {
+		} else if CheckSkuExistsInProductSku(SkuExistData{Sku: utils.AnyToString(sku), NotProductId: productId}) {
 			message = fmt.Sprintf("Mã %s đã tồn tại trong hệ thống", sku)
 			isOk = false
 		}

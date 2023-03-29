@@ -3,8 +3,7 @@ package storeproducts
 import (
 	"product-service/internal/models"
 
-	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
-
+	"github.com/2751997nam/go-helpers/utils"
 	"github.com/samber/lo"
 )
 
@@ -24,7 +23,11 @@ func StoreProductNCategory(productId uint64, categoryIds []uint64) {
 	if len(deleteIds) > 0 {
 		err := db.Unscoped().Where("category_id IN ?", deleteIds).Where("product_id = ?", productId).Delete(&models.ProductNCategory{}).Error
 		if err != nil {
-			goHelpers.LogPanic(err)
+			utils.LogPanic(err)
+		} else {
+			for _, id := range deleteIds {
+				utils.QuickLog(map[string]any{}, id, "PRODUCT_N_CATEGORY", "DELETE")
+			}
 		}
 	}
 	storeIds, _ := lo.Difference(categoryIds, existedIds)
@@ -37,6 +40,13 @@ func StoreProductNCategory(productId uint64, categoryIds []uint64) {
 			})
 		}
 
-		db.Create(&storeData)
+		err := db.Create(&storeData).Error
+		if err != nil {
+			utils.LogPanic(err)
+		} else {
+			for _, item := range storeData {
+				utils.QuickLog(item, item.ID, "PRODUCT_N_CATEGORY", "CREATE")
+			}
+		}
 	}
 }

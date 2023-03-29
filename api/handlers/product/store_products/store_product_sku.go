@@ -4,8 +4,7 @@ import (
 	"product-service/internal/models"
 	"strconv"
 
-	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
-
+	"github.com/2751997nam/go-helpers/utils"
 	"github.com/samber/lo"
 
 	"github.com/gosimple/slug"
@@ -53,7 +52,7 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 
 	for _, v := range values {
 		value := v.(map[string]any)
-		if variantExistLen != optionLen && goHelpers.AnyFloat64ToUint64(value["id"]) > 0 {
+		if variantExistLen != optionLen && utils.AnyFloat64ToUint64(value["id"]) > 0 {
 			value["id"] = 0
 		}
 		productSku := buildProductSku(value, productId)
@@ -65,22 +64,24 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 			}
 			err := db.Create(&productSku).Error
 			if err != nil {
-				goHelpers.LogPanic(err)
+				utils.LogPanic(err)
+			} else {
+				utils.QuickLog(productSku, productSku.ID, "PRODUCT_SKU", "CREATE")
 			}
 			createIds = append(createIds, productSku.ID)
 			for _, so := range skuOptions {
 				skuOption := so.(map[string]any)
 				variantSlug := ""
-				if len(goHelpers.AnyToString(skuOption["variant_slug"])) == 0 {
-					variantSlug = goHelpers.AnyToString(skuOption["variant_slug"])
+				if len(utils.AnyToString(skuOption["variant_slug"])) == 0 {
+					variantSlug = utils.AnyToString(skuOption["variant_slug"])
 				} else {
-					variantSlug = slug.Make(goHelpers.AnyToString(skuOption["variant"]))
+					variantSlug = slug.Make(utils.AnyToString(skuOption["variant"]))
 				}
 				optionSlug := ""
-				if len(goHelpers.AnyToString(skuOption["slug"])) > 0 {
-					optionSlug = goHelpers.AnyToString(skuOption["slug"])
+				if len(utils.AnyToString(skuOption["slug"])) > 0 {
+					optionSlug = utils.AnyToString(skuOption["slug"])
 				} else {
-					optionSlug = slug.Make(goHelpers.AnyToString(skuOption["name"]))
+					optionSlug = slug.Make(utils.AnyToString(skuOption["name"]))
 				}
 				key := variantSlug + "+++" + optionSlug
 				mappingValue, ok := variantMapping[key]
@@ -105,7 +106,9 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 			if hasChange(existedSkuesById[productSku.ID], productSku) {
 				err := db.Where("id = ?", productSku.ID).Omit("CreatedAt").Updates(&productSku).Error
 				if err != nil {
-					goHelpers.LogPanic(err)
+					utils.LogPanic(err)
+				} else {
+					utils.QuickLog(productSku, productSku.ID, "PRODUCT_SKU", "UPDATE")
 				}
 			}
 			skuIds = append(skuIds, productSku.ID)
@@ -127,7 +130,11 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 	if len(storeProductSkuValueData) > 0 {
 		err := db.Model(&models.ProductSkuValue{}).Omit("ID").Create(storeProductSkuValueData).Error
 		if err != nil {
-			goHelpers.LogPanic(err)
+			utils.LogPanic(err)
+		} else {
+			for _, item := range storeProductSkuValueData {
+				utils.QuickLog(item, "", "PRODUCT_SKU_VALUE", "CREATE")
+			}
 		}
 	}
 
@@ -138,7 +145,11 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 		for _, chunk := range lo.Chunk(deleteGallerySkuIds, 100) {
 			err := db.Unscoped().Where("product_id IN ?", chunk).Where("type = ?", "VARIANT").Delete(&models.ProductGallery{}).Error
 			if err != nil {
-				goHelpers.LogPanic(err)
+				utils.LogPanic(err)
+			} else {
+				for _, id := range chunk {
+					utils.QuickLog(map[string]any{}, id, "PRODUCT_GALLERY_VARIANT", "DELETE")
+				}
 			}
 		}
 	}
@@ -155,11 +166,19 @@ func StoreProductSkues(data map[string]any, variantMapping map[string]map[string
 			for _, chunk := range lo.Chunk(deleteIds, 100) {
 				err := db.Where("sku_id IN (?)", chunk).Delete(&models.ProductSkuValue{}).Error
 				if err != nil {
-					goHelpers.LogPanic(err)
+					utils.LogPanic(err)
+				} else {
+					for _, id := range chunk {
+						utils.QuickLog(map[string]any{"sku_id": id}, id, "BULK_PRODUCT_SKU_VALUE", "DELETE")
+					}
 				}
 				err = db.Where("id IN (?)", chunk).Delete(&models.ProductSku{}).Error
 				if err != nil {
-					goHelpers.LogPanic(err)
+					utils.LogPanic(err)
+				} else {
+					for _, id := range chunk {
+						utils.QuickLog(map[string]any{}, id, "PRODUCT_SKU", "DELETE")
+					}
 				}
 			}
 		}
@@ -195,26 +214,26 @@ func hasChange(old models.ProductSku, new models.ProductSku) bool {
 func buildProductSku(input map[string]any, productId uint64) models.ProductSku {
 	retVal := models.ProductSku{
 		BaseModel: models.BaseModel{
-			ID: goHelpers.AnyFloat64ToUint64(input["id"]),
+			ID: utils.AnyFloat64ToUint64(input["id"]),
 		},
 		ProductId: productId,
-		ImageUrl:  goHelpers.AnyToString(input["image_url"]),
+		ImageUrl:  utils.AnyToString(input["image_url"]),
 		Price:     0,
 		HighPrice: 0,
-		Sku:       goHelpers.AnyToString(input["sku"]),
-		IsDefault: goHelpers.AnyToInt(input["is_default"]),
+		Sku:       utils.AnyToString(input["sku"]),
+		IsDefault: utils.AnyToInt(input["is_default"]),
 	}
 
-	if goHelpers.AnyToFloat(input["price"]) > 0 {
-		retVal.Price = goHelpers.AnyToFloat(input["price"])
+	if utils.AnyToFloat(input["price"]) > 0 {
+		retVal.Price = utils.AnyToFloat(input["price"])
 	}
 
-	if goHelpers.AnyToFloat(input["high_price"]) > 0 {
-		retVal.HighPrice = goHelpers.AnyToFloat(input["high_price"])
+	if utils.AnyToFloat(input["high_price"]) > 0 {
+		retVal.HighPrice = utils.AnyToFloat(input["high_price"])
 	}
 
-	if len(goHelpers.AnyToString(input["status"])) > 0 {
-		retVal.Status = goHelpers.AnyToString(input["status"])
+	if len(utils.AnyToString(input["status"])) > 0 {
+		retVal.Status = utils.AnyToString(input["status"])
 	} else {
 		retVal.Status = "ACTIVE"
 	}
@@ -226,10 +245,14 @@ func removeAllSku(productId uint64) {
 	db := models.GetDB()
 	err := db.Model(&models.ProductSkuValue{}).Where("product_id = ?", productId).Delete(&models.ProductSkuValue{}).Error
 	if err != nil {
-		goHelpers.LogPanic(err)
+		utils.LogPanic(err)
+	} else {
+		utils.QuickLog(map[string]any{"product_id": productId}, productId, "BULK_PRODUCT_SKU_VALUE", "DELETE")
 	}
 	err = db.Model(&models.ProductSku{}).Where("product_id = ?", productId).Delete(&models.ProductSku{}).Error
 	if err != nil {
-		goHelpers.LogPanic(err)
+		utils.LogPanic(err)
+	} else {
+		utils.QuickLog(map[string]any{"product_id": productId}, productId, "BULK_PRODUCT_SKU", "DELETE")
 	}
 }

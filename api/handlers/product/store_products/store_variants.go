@@ -2,11 +2,9 @@ package storeproducts
 
 import (
 	"fmt"
-	"log"
 	"product-service/internal/models"
 
-	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
-
+	"github.com/2751997nam/go-helpers/utils"
 	"github.com/gosimple/slug"
 )
 
@@ -18,48 +16,53 @@ func StoreVariants(data map[string]any) map[string]map[string]string {
 	for _, dataVariant := range dataVariants {
 		variant := dataVariant.(map[string]any)
 		variantValues := variant["values"].([]any)
-		if goHelpers.AnyToString(variant["name"]) == "" || len(variantValues) == 0 {
+		if utils.AnyToString(variant["name"]) == "" || len(variantValues) == 0 {
 			continue
 		}
-		variantSlug := slug.Make(goHelpers.AnyToString(variant["name"]))
+		variantSlug := slug.Make(utils.AnyToString(variant["name"]))
 		saveVariant := models.Variant{
-			Name: goHelpers.AnyToString(variant["name"]),
+			Name: utils.AnyToString(variant["name"]),
 			Slug: variantSlug,
-			Type: goHelpers.AnyToString(variant["type"]),
+			Type: utils.AnyToString(variant["type"]),
 		}
-		if goHelpers.AnyFloat64ToUint64(variant["id"]) > 0 {
-			saveVariant.ID = goHelpers.AnyFloat64ToUint64(variant["id"])
+		if utils.AnyFloat64ToUint64(variant["id"]) > 0 {
+			saveVariant.ID = utils.AnyFloat64ToUint64(variant["id"])
 		} else {
 			err := db.Create(&saveVariant).Error
 			if err != nil {
-				goHelpers.LogPanic(err)
+				utils.LogPanic(err)
+			} else {
+				utils.QuickLog(saveVariant, saveVariant.ID, "VARIANT", "CREATE")
 			}
 		}
 
 		for _, val := range variantValues {
 			target := map[string]string{}
 			value := val.(map[string]any)
-			slug := slug.Make(goHelpers.AnyToString(value["name"]))
+			slug := slug.Make(utils.AnyToString(value["name"]))
 			option := models.VariantOption{
 				VariantId: saveVariant.ID,
-				Name:      goHelpers.AnyToString(value["name"]),
-				Code:      GenerateOptionCode(goHelpers.AnyToString(value["name"])),
+				Name:      utils.AnyToString(value["name"]),
+				Code:      GenerateOptionCode(utils.AnyToString(value["name"])),
 				Slug:      slug,
-				ImageUrl:  goHelpers.AnyToString(value["image_url"]),
+				ImageUrl:  utils.AnyToString(value["image_url"]),
 			}
-			if goHelpers.AnyFloat64ToUint64(value["id"]) > 0 {
-				option.ID = goHelpers.AnyFloat64ToUint64(value["id"])
+			if utils.AnyFloat64ToUint64(value["id"]) > 0 {
+				option.ID = utils.AnyFloat64ToUint64(value["id"])
 				if len(option.ImageUrl) > 0 {
 					err := db.Model(&option).Select("ImageUrl").Updates(&option).Error
-					log.Println("id", option.ID)
 					if err != nil {
-						goHelpers.LogPanic(err)
+						utils.LogPanic(err)
+					} else {
+						utils.QuickLog(option, option.ID, "VARIANT_OPTION", "UPDATE")
 					}
 				}
 			} else {
 				err := db.Create(&option).Error
 				if err != nil {
-					goHelpers.LogPanic(err)
+					utils.LogPanic(err)
+				} else {
+					utils.QuickLog(option, option.ID, "VARIANT_OPTION", "CREATE")
 				}
 			}
 			target["variantOptionId"] = fmt.Sprint(option.ID)

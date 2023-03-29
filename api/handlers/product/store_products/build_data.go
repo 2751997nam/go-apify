@@ -1,34 +1,32 @@
 package storeproducts
 
 import (
-	"fmt"
 	"product-service/internal/models"
 
-	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
-
+	"github.com/2751997nam/go-helpers/utils"
 	"github.com/gosimple/slug"
 )
 
 func buildProductData(data map[string]any) models.Product {
-	fmt.Println("product id : ", data["id"])
 	retVal := models.Product{
-		BaseModel: models.BaseModel{
-			ID: goHelpers.AnyFloat64ToUint64(data["id"]),
-		},
-		Name:               goHelpers.AnyToString(data["name"]),
-		Sku:                goHelpers.AnyToString(data["sku"]),
-		Slug:               slug.Make(goHelpers.AnyToString(data["name"])),
-		ImageUrl:           goHelpers.AnyToString(data["image_url"]),
-		Price:              goHelpers.AnyToFloat(data["price"]),
-		HighPrice:          goHelpers.AnyToFloat(data["high_price"]),
-		AddShippingFee:     goHelpers.AnyToFloat(data["add_shipping_fee"]),
-		Status:             goHelpers.AnyToString(data["status"]),
-		BrandId:            goHelpers.AnyFloat64ToUint64(data["brand_id"]),
-		ApproveAdvertising: goHelpers.AnyToInt(data["approve_advertising"]),
-		IsTrademark:        goHelpers.AnyToInt(data["is_trademark"]),
-		Content:            goHelpers.AnyToString(data["content"]),
-		Description:        goHelpers.AnyToString(data["description"]),
-		Note:               goHelpers.AnyToString(data["note"]),
+		Name:               utils.AnyToString(data["name"]),
+		Sku:                utils.AnyToString(data["sku"]),
+		Slug:               slug.Make(utils.AnyToString(data["name"])),
+		ImageUrl:           utils.AnyToString(data["image_url"]),
+		Price:              utils.AnyToFloat(data["price"]),
+		HighPrice:          utils.AnyToFloat(data["high_price"]),
+		AddShippingFee:     utils.AnyToFloat(data["add_shipping_fee"]),
+		Status:             utils.AnyToString(data["status"]),
+		BrandId:            utils.AnyFloat64ToUint64(data["brand_id"]),
+		ApproveAdvertising: utils.AnyToInt(data["approve_advertising"]),
+		IsTrademark:        utils.AnyToInt(data["is_trademark"]),
+		Content:            utils.AnyToString(data["content"]),
+		Description:        utils.AnyToString(data["description"]),
+		Note:               utils.AnyToString(data["note"]),
+	}
+
+	if dataId, ok := data["id"]; ok {
+		retVal.ID = utils.AnyFloat64ToUint64(dataId)
 	}
 
 	return retVal

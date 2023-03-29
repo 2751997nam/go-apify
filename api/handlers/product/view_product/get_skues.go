@@ -7,8 +7,7 @@ import (
 	"product-service/internal/types"
 	"sort"
 
-	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
-
+	"github.com/2751997nam/go-helpers/utils"
 	"golang.org/x/exp/maps"
 )
 
@@ -57,7 +56,7 @@ func GetSkues(product models.Product) GetSkuReponse {
 		}
 	}
 	for VariantId := range optionByVariant {
-		optionByVariant[VariantId] = goHelpers.ArrayUnique(optionByVariant[VariantId])
+		optionByVariant[VariantId] = utils.ArrayUnique(optionByVariant[VariantId])
 	}
 
 	variantById := map[uint64]models.Variant{}

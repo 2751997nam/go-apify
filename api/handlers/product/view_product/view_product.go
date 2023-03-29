@@ -5,8 +5,7 @@ import (
 	"product-service/internal/models"
 	"product-service/internal/types"
 
-	goHelpers "github.com/2751997nam/go-helpers/pkg/helpers"
-
+	"github.com/2751997nam/go-helpers/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,9 +36,9 @@ func getProduct(id uint64) models.Product {
 }
 
 func View(c *gin.Context) {
-	productId := goHelpers.AnyFloat64ToUint64(c.Param("id"))
+	productId := utils.AnyFloat64ToUint64(c.Param("id"))
 	if productId == 0 {
-		goHelpers.ResponseFail(c, "product id is required", http.StatusUnprocessableEntity)
+		utils.ResponseFail(c, "product id is required", http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -50,14 +49,14 @@ func View(c *gin.Context) {
 		Variants: GetSkues(product),
 	}
 
-	goHelpers.ResponseSuccess(c, result, http.StatusOK)
+	utils.ResponseSuccess(c, result, http.StatusOK)
 
 }
 
 func ViewVariant(c *gin.Context) {
-	productId := goHelpers.AnyFloat64ToUint64(c.Param("id"))
+	productId := utils.AnyFloat64ToUint64(c.Param("id"))
 	if productId == 0 {
-		goHelpers.ResponseFail(c, "product id is required", http.StatusUnprocessableEntity)
+		utils.ResponseFail(c, "product id is required", http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -74,5 +73,5 @@ func ViewVariant(c *gin.Context) {
 
 	result := GetSkues(product)
 
-	goHelpers.ResponseSuccess(c, result, http.StatusOK)
+	utils.ResponseSuccess(c, result, http.StatusOK)
 }
