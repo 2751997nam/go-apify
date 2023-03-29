@@ -69,7 +69,7 @@ func Store(c *gin.Context) {
 		nestedset.Create(db, &category, nil)
 	}
 	breadcrumbs := []models.Category{}
-	listcategory.GetChildPath(category.ID, &breadcrumbs)
+	listcategory.GetRootPath(category.ID, &breadcrumbs)
 	value, err := json.Marshal(breadcrumbs)
 	if err != nil {
 		category.Breadcrumb = string(value)
