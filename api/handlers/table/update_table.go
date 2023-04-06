@@ -1,6 +1,7 @@
 package table
 
 import (
+	"apify-service/api/helpers"
 	"apify-service/internal/models"
 	"fmt"
 	"net/http"
@@ -28,14 +29,14 @@ func Update(c *gin.Context) {
 	saveData["id"] = id
 	saveData["updated_at"] = time.Now()
 
-	err = db.Table(c.Param("table")).Where("id = ?", id).Updates(&saveData).Error
+	err = db.Table(helpers.GetTableName(c.Param("table"))).Where("id = ?", id).Updates(&saveData).Error
 	if err != nil {
-		utils.QuickLog(saveData, "", c.Param("table"), "UPDATE_ERROR")
-		message := fmt.Sprintf("An error occur when update table %s: "+err.Error(), c.Param("table"))
+		utils.QuickLog(saveData, "", helpers.GetTableName(c.Param("table")), "UPDATE_ERROR")
+		message := fmt.Sprintf("An error occur when update table %s: "+err.Error(), helpers.GetTableName(c.Param("table")))
 		utils.ResponseFail(c, message, http.StatusInternalServerError)
 		utils.LogPanic(message)
 	} else {
-		utils.QuickLog(saveData, "", c.Param("table"), "UPDATE")
+		utils.QuickLog(saveData, "", helpers.GetTableName(c.Param("table")), "UPDATE")
 		utils.ResponseSuccess(c, saveData, http.StatusOK)
 	}
 }

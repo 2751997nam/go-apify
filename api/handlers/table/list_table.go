@@ -1,8 +1,10 @@
 package table
 
 import (
+	"apify-service/api/helpers"
 	"apify-service/internal/models"
 	"fmt"
+	"log"
 	"math"
 	"regexp"
 	"strconv"
@@ -37,12 +39,16 @@ func buildQuery(table string, filter map[string]string) *gorm.DB {
 	db := models.GetDB()
 	query := db.Table(table)
 
-	if filterStr, ok := filter["filters"]; ok {
+	if filterStr, ok := filter["filters"]; ok && len(filterStr) > 0 {
 		buildFilter(query, filterStr)
 	}
 
 	if fieldsStr, ok := filter["fields"]; ok {
 		buildSelect(query, fieldsStr)
+	}
+
+	if sortStr, ok := filter["sorts"]; ok && len(sortStr) > 0 {
+		buildSort(query, sortStr)
 	}
 
 	return query
@@ -84,7 +90,22 @@ func buildFilter(query *gorm.DB, filterStr string) *gorm.DB {
 
 func buildSelect(query *gorm.DB, fieldsStr string) *gorm.DB {
 	fields := strings.Split(fieldsStr, ",")
+	log.Println("fields", fields)
 	query.Select(fields)
+
+	return query
+}
+
+func buildSort(query *gorm.DB, sortStr string) *gorm.DB {
+	values := strings.Split(sortStr, ",")
+
+	for _, value := range values {
+		if value[0:1] == "-" {
+			query.Order(fmt.Sprintf(`%s desc`, value[1:]))
+		} else {
+			query.Order(value)
+		}
+	}
 
 	return query
 }
@@ -110,9 +131,9 @@ func buildMeta(table string, filter map[string]string) utils.Meta {
 func Find(c *gin.Context) {
 	var result []map[string]any
 	filter := getFilter(c)
-	query := buildQuery(c.Param("table"), filter)
+	query := buildQuery(helpers.GetTableName(c.Param("table")), filter)
 	buildPaginationQuery(query, filter).Find(&result)
-	meta := buildMeta(c.Param("table"), filter)
+	meta := buildMeta(helpers.GetTableName(c.Param("table")), filter)
 
 	utils.ResponseWithMeta(c, result, meta)
 }

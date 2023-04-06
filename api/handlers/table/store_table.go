@@ -1,6 +1,7 @@
 package table
 
 import (
+	"apify-service/api/helpers"
 	"apify-service/internal/models"
 	"fmt"
 	"net/http"
@@ -27,14 +28,14 @@ func Store(c *gin.Context) {
 	saveData["created_at"] = time.Now()
 	saveData["updated_at"] = time.Now()
 
-	err = db.Table(c.Param("table")).Create(&saveData).Error
+	err = db.Table(helpers.GetTableName(c.Param("table"))).Create(&saveData).Error
 	if err != nil {
-		utils.QuickLog(saveData, "", c.Param("table"), "CREATE_ERROR")
-		message := fmt.Sprintf("An error occur when store table %s: "+err.Error(), c.Param("table"))
+		utils.QuickLog(saveData, "", helpers.GetTableName(c.Param("table")), "CREATE_ERROR")
+		message := fmt.Sprintf("An error occur when store table %s: "+err.Error(), helpers.GetTableName(c.Param("table")))
 		utils.ResponseFail(c, message, http.StatusInternalServerError)
 		utils.LogPanic(message)
 	} else {
-		utils.QuickLog(saveData, "", c.Param("table"), "CREATE")
+		utils.QuickLog(saveData, "", helpers.GetTableName(c.Param("table")), "CREATE")
 		utils.ResponseSuccess(c, saveData, http.StatusOK)
 	}
 }

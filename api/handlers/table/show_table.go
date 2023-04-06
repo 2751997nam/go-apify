@@ -1,6 +1,7 @@
 package table
 
 import (
+	"apify-service/api/helpers"
 	"apify-service/internal/models"
 	"net/http"
 
@@ -12,7 +13,7 @@ func Show(c *gin.Context) {
 	var result []map[string]any
 	id := utils.AnyToUint(c.Param("id"))
 	db := models.GetDB()
-	err := db.Table(c.Param("table")).Where("id = ?", id).Find(&result).Error
+	err := db.Table(helpers.GetTableName(c.Param("table"))).Where("id = ?", id).Find(&result).Error
 
 	if err != nil {
 		utils.ResponseFail(c, err.Error(), http.StatusNotFound)
