@@ -1,8 +1,8 @@
 package models
 
 import (
+	"apify-service/internal/driver"
 	"log"
-	"product-service/internal/driver"
 	"sync"
 
 	"gorm.io/gorm"

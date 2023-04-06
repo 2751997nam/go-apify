@@ -12,5 +12,5 @@ func DoNothing(c *gin.Context) {
 }
 
 func Home(c *gin.Context) {
-	utils.ResponseSuccess(c, "ChilleTee Product Service", http.StatusOK)
+	utils.ResponseSuccess(c, "ChilliTee Apify Service", http.StatusOK)
 }

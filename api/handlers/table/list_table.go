@@ -1,9 +1,9 @@
 package table
 
 import (
+	"apify-service/internal/models"
 	"fmt"
 	"math"
-	"product-service/internal/models"
 	"regexp"
 	"strconv"
 	"strings"

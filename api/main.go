@@ -1,10 +1,10 @@
 package main
 
 import (
+	"apify-service/internal/driver"
 	"fmt"
 	"log"
 	"os"
-	"product-service/internal/driver"
 
 	"gorm.io/gorm"
 )

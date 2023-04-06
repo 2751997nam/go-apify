@@ -1,4 +1,4 @@
-module product-service
+module apify-service
 
 go 1.19
 

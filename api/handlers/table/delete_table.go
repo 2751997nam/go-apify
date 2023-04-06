@@ -1,9 +1,9 @@
 package table
 
 import (
+	"apify-service/internal/models"
 	"fmt"
 	"net/http"
-	"product-service/internal/models"
 
 	"github.com/2751997nam/go-helpers/utils"
 	"github.com/gin-gonic/gin"

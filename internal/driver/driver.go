@@ -1,9 +1,9 @@
 package driver
 
 import (
+	"apify-service/internal/config"
 	"fmt"
 	"log"
-	"product-service/internal/config"
 	"time"
 
 	"gorm.io/driver/mysql"
