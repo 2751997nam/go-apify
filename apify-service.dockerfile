@@ -5,4 +5,4 @@ RUN mkdir /app
 
 COPY . /app
 
-CMD [ "/app/productServiceDevApp"]
+CMD [ "/app/apifyServiceDevApp"]
